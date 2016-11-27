@@ -12,6 +12,23 @@ public class Meal implements Serializable,MealInterface {
     private MealSize size;
     private List<String> ingredients;
 
+    public Meal(double price, MealCategory category, MealSize size, List<String> ingredients) {
+        this.price = price;
+        this.category = category;
+        this.size = size;
+        this.ingredients = ingredients;
+    }
+
+    @Override
+    public double countPrice() {
+        return price;
+    }
+
+    @Override
+    public int countAmount() {
+        return size.getValue();
+    }
+
     public MealCategory getCategory() {
         return category;
     }
@@ -42,10 +59,5 @@ public class Meal implements Serializable,MealInterface {
 
     public void setPrice(double price) {
         this.price = price;
-    }
-
-    @Override
-    public double countPrice() {
-        return price;
     }
 }

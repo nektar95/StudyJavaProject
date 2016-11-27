@@ -32,6 +32,27 @@ public class Provider implements Serializable {
         //position = ControlPanel.get().getAdress();
     }
 
+    public boolean draw()
+    {
+        return true;
+    }
+
+    public void addOrder(Order order){
+        orders.add(order);
+    }
+
+    public void deliver(){
+
+    }
+
+    public void fillIn(){
+
+    }
+
+    public void goBack(){
+
+    }
+
     public String getName() {
         return name;
     }

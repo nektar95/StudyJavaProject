@@ -12,28 +12,38 @@ import java.util.List;
  */
 public class Order implements Serializable{
     private double price;
+    private int quantify;
     private Customer customer;
     private List<MealInterface> mealsList;
 
     public Order(Customer customer) {
         mealsList = new ArrayList<>();
         this.customer = customer;
+        if(customer.checkDiscount()){
+            //very primitive way
+            price = -100;
+        }else {
+            price = 0;
+        }
+        quantify = 0;
     }
 
-    private void countOrderCost(){
-        //CHECKING DISTANCE
-        price = 0;
-        for(MealInterface item : mealsList){
-            price += item.countPrice();
-        }
+    public int getQuantify() {
+        return quantify;
+    }
+
+    public void setQuantify(int quantify) {
+        this.quantify = quantify;
     }
 
     public void addToOrder(MealInterface item) {
         mealsList.add(item);
+        quantify += item.countAmount();
+        //CHECK DISTANCE
+        price += item.countPrice();
     }
 
     public double getPrice() {
-        countOrderCost();
         return price;
     }
 

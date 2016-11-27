@@ -5,4 +5,5 @@ package restaurant.meals;
  */
 public interface MealInterface {
     double countPrice();
+    int countAmount();
 }
