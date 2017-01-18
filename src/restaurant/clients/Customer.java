@@ -1,6 +1,11 @@
 package restaurant.clients;
 
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import restaurant.Adress;
+import restaurant.Container;
+import restaurant.DrawingShape;
+import restaurant.Order;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -8,31 +13,49 @@ import java.util.Date;
 /**
  * Created by Aleksander Kaźmierczak on 27.11.2016.
  */
-public class Customer implements Serializable {
+public class Customer extends DrawingShape implements Serializable, Runnable {
     private String name;
     private int code;
     private String phoneNumber;
-    private Adress deliveryAdress;
     private Date orderTime;
     private String eMail;
 
     public Customer(String name, int code, String phoneNumber, Adress deliveryAdress, Date orderTime) {
+        super(deliveryAdress, Color.BLUE);
         this.name = name;
         this.code = code;
         this.phoneNumber = phoneNumber;
-        this.deliveryAdress = deliveryAdress;
         this.orderTime = orderTime;
+        drawMove();
+    }
+
+    @Override
+    public void run() {
+        while (true){
+            System.out.println("CUSTOMER");
+            try {
+                Thread.sleep(5000); // LOSOWY OKRES MA BYC
+                Container.get().getMutex().acquire(); //podnosi semafor binanry
+                Order order = new Order(this);
+
+                Container.get().getOrderList().add(order);
+
+                Container.get().getMutex().release();
+
+                System.out.println("NEW ORDER");
+                //method generating order in container, static, synchronized?
+                Container.get().getSemaphore().release();
+
+            } catch (InterruptedException ie){
+                //HANDLE THIS BY DRAWING BACK TRACE
+            }
+        }
     }
 
     public void addPoints(int p){}
 
     public boolean checkDiscount(){
         return false;
-    }
-
-    public boolean draw()
-    {
-        return true;
     }
 
     public String getName() {
@@ -57,14 +80,6 @@ public class Customer implements Serializable {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
-    }
-
-    public Adress getDeliveryAdress() {
-        return deliveryAdress;
-    }
-
-    public void setDeliveryAdress(Adress deliveryAdress) {
-        this.deliveryAdress = deliveryAdress;
     }
 
     public Date getOrderTime() {
