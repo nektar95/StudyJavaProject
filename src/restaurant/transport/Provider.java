@@ -1,15 +1,22 @@
 package restaurant.transport;
 
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.Stage;
 import restaurant.Adress;
 import restaurant.Container;
 import restaurant.DrawingShape;
 import restaurant.Order;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
 import java.math.*;
@@ -28,6 +35,7 @@ public class Provider extends DrawingShape implements Serializable, Runnable {
     private List<VehicleType> drivingLicenses;
     private Vehicle vehicle;
     private Stack<Order> orders;
+    private ProviderController controller;
 
     public Provider(String name, String surname, String PESEL) {
         super(Container.get().getRestaurantAdress(),Color.RED);
@@ -37,9 +45,26 @@ public class Provider extends DrawingShape implements Serializable, Runnable {
         workDaysMap = new HashMap<>();
         drivingLicenses = new ArrayList<>();
         orders = new Stack<>();
+        vehicle = new Vehicle(VehicleType.CAR,3,3,4,3,"dd");
         getShape().setOnMouseClicked(event -> {
-            System.out.println("PROVIDER CLICKED");
+            try {
+                providerInfoBox();
+            } catch (IOException e){
+
+            }
         });
+    }
+
+    @Override
+    public String toString(){
+        return " Name: " + name +
+                "Surname: " + surname +
+                "PESEL: " + PESEL +
+                "Vehicle: " + vehicle+
+                "Work days: " + getWorkDaysMap().toString() +
+                        "Orders: " + getOrders().toString();
+
+
     }
 
     @Override
@@ -94,6 +119,49 @@ public class Provider extends DrawingShape implements Serializable, Runnable {
 
     public void addOrder(Order order){
         orders.add(order);
+    }
+
+    public void providerInfoBox() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("provider.fxml"));
+        Parent root = loader.load();
+        controller = loader.getController();
+        Scene scene = new Scene(root);
+        Stage stage = new Stage();
+        stage.setScene(scene);
+        stage.setTitle("Provider Info");
+        stage.show();
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    controller.getListViewProvider().setItems(getListInfo());
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+
+                }
+            }
+        });
+        thread.setDaemon(true);
+        thread.start();
+    }
+
+    public ObservableList<String> getListInfo(){
+        ObservableList<String> list = FXCollections.observableArrayList();
+        list.add("Name:" + getName());
+        list.add("Surname:" + getSurname());
+        list.add("PESEL:" + getPESEL());
+        list.add("Work Schedule:" + getWorkDaysMap().toString());
+        list.add("Driving Licence:" + getDrivingLicenses().toString());
+        list.add("Vehicle:" + getVehicle().toString());
+        String orders;
+        if (getOrders().size() == 0) {
+            orders = "Empty";
+        } else {
+            orders = getOrders().peek().toString();
+        }
+        list.add("Orders:" + orders
+        );
+        return list;
     }
 
     public void deliver(WayType type){
