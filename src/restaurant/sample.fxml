@@ -5,10 +5,14 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.effect.Blend?>
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Rectangle?>
 
 <BorderPane prefHeight="640.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1" fx:controller="restaurant.Controller">
    <top>
@@ -39,6 +43,27 @@
             <Button fx:id="new_provider_button" mnemonicParsing="false" onAction="#onNewProviderClick" text="New provider" />
             <Button fx:id="new_meal_button" mnemonicParsing="false" onAction="#onNewMealClick" text="New meal" />
             <Button fx:id="new_order_button" mnemonicParsing="false" onAction="#onNewOrderClick" text="New order" textFill="RED" />
+            <HBox fillHeight="false" prefWidth="130.0">
+               <children>
+                  <Rectangle arcHeight="1.0" arcWidth="2.0" fill="#008604" height="30.0" stroke="BLACK" strokeType="INSIDE" width="30.0" />
+                  <TextField alignment="CENTER_RIGHT" editable="false" prefHeight="30.0" text="Restaurant">
+                     <effect>
+                        <Blend />
+                     </effect></TextField>
+               </children>
+            </HBox>
+            <HBox fillHeight="false" prefWidth="100.0">
+               <children>
+                  <Rectangle arcHeight="1.0" arcWidth="2.0" fill="BLUE" height="30.0" stroke="BLACK" strokeType="INSIDE" width="30.0" />
+                  <TextField alignment="CENTER_RIGHT" editable="false" prefHeight="30.0" text="Client" />
+               </children>
+            </HBox>
+            <HBox fillHeight="false" layoutX="15.0" layoutY="280.0" prefWidth="100.0">
+               <children>
+                  <Rectangle arcHeight="1.0" arcWidth="2.0" fill="RED" height="30.0" stroke="BLACK" strokeType="INSIDE" width="30.0" />
+                  <TextField alignment="CENTER_RIGHT" editable="false" prefHeight="30.0" text="Provider" />
+               </children>
+            </HBox>
          </children>
          <BorderPane.margin>
             <Insets />

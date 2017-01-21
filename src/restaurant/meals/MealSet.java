@@ -9,7 +9,14 @@ import java.util.List;
  */
 public class MealSet implements Serializable,MealInterface {
     private double discount;
+    private String name;
     private List<Meal> mealList;
+
+    public String toString() {
+        return 	"\n\tName: " + name
+                +"\n\tDiscount: " + Double.toString(discount)
+                +mealList.toString();
+    }
 
     public MealSet(double discount) {
         this.discount = discount;

@@ -22,6 +22,16 @@ public class Vehicle implements Serializable {
         this.registrationNumber = registrationNumber;
     }
 
+    @Override
+    public String toString() {
+        return "\n\tRegistration: " + registrationNumber
+                +"\n\tType: " + type
+                +"\n\tFuel capacity: "+Double.toString(fuelCapacity)
+                +"\n\tFuel: "+Double.toString(fuel)
+                +"\n\tSpeed: "+Double.toString(speed)
+                +"\n\tCapacity: "+Double.toString(capacity);
+    }
+
     public double getSpeed() {
         return speed;
     }

@@ -43,12 +43,18 @@ public class DrawingShape {
         shape.xProperty().set(position.getX()* Container.get().getPolygonSize());
         shape.yProperty().set(position.getY()*Container.get().getPolygonSize());
 
-        Container.getPaneChildren().add(shape);
+        Container.get().getPaneChildren().add(shape);
     }
 
     public void drawMove(){
         Platform.runLater(() -> {
             shape.relocate(position.getX()*Container.get().getPolygonSize(),position.getY()*Container.get().getPolygonSize());
+        });
+    }
+
+    public void remove(){
+        Platform.runLater(() -> {
+            Container.get().getPaneChildren().remove(shape);
         });
     }
 }

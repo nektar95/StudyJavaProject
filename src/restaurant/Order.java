@@ -5,6 +5,7 @@ import restaurant.meals.MealInterface;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.DoubleSummaryStatistics;
 import java.util.List;
 
 /**
@@ -26,6 +27,13 @@ public class Order implements Serializable{
             price = 0;
         }
         quantify = 0;
+    }
+
+    @Override
+    public String toString() {
+        return 	"\n\tPrice: " + Double.toString(price)
+                +"\n\tQuantify: " + Integer.toString(quantify)
+                +"\n\tMeals: " + mealsList.toString();
     }
 
     public int getQuantify() {

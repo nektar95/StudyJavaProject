@@ -44,6 +44,7 @@ public class Provider extends DrawingShape implements Serializable, Runnable {
         this.PESEL = PESEL;
         workDaysMap = new HashMap<>();
         drivingLicenses = new ArrayList<>();
+        drivingLicenses.add(VehicleType.CAR);
         orders = new Stack<>();
         vehicle = new Vehicle(VehicleType.CAR,3,3,4,3,"dd");
         getShape().setOnMouseClicked(event -> {
@@ -69,8 +70,8 @@ public class Provider extends DrawingShape implements Serializable, Runnable {
 
     @Override
     public void run() {
-        try {
-            while (!Thread.currentThread().isInterrupted()){
+        while (!Thread.currentThread().isInterrupted()){
+            try {
                 Container.get().getSemaphore().acquire();
                 Container.get().getMutex().acquire();
 
@@ -88,28 +89,27 @@ public class Provider extends DrawingShape implements Serializable, Runnable {
                         orders.pop();
                     }
                     goBack();
-
                 }
-            }
-        } catch (InterruptedException ie){
-            System.out.println("PROVIDER COME BACK");
-            try {
-                goBack();
-            } catch (InterruptedException e){
-                System.out.println("CRASH WHILE COMING BACK");
+            } catch (InterruptedException ie){
+                Thread.currentThread().interrupt();
+                orders.clear();
+                remove();
+                break;
+
             }
         }
+        System.out.println("DELETED");
     }
 
     private void goToCustomer() throws InterruptedException{
-        while (getPosition() != orders.peek().getCustomer().getPosition()) {
+        while (getPosition() != orders.peek().getCustomer().getPosition() &&!Thread.currentThread().isInterrupted()) {
             Thread.sleep(100);
             deliver(WayType.ORDER);
             drawMove();
         }
     }
     private void goBack() throws InterruptedException{
-        while (getPosition() != Container.get().getRestaurantAdress()) {
+        while (getPosition() != Container.get().getRestaurantAdress()&&!Thread.currentThread().isInterrupted()) {
             Thread.sleep(100);
             deliver(WayType.HOME);
             drawMove();
@@ -135,6 +135,7 @@ public class Provider extends DrawingShape implements Serializable, Runnable {
             public void run() {
                 try {
                     controller.getListViewProvider().setItems(getListInfo());
+                    controller.setPesel(PESEL);
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
 
@@ -230,7 +231,7 @@ public class Provider extends DrawingShape implements Serializable, Runnable {
     }
 
     private double countDistnace(WayType type,int x, int y){
-        if(type==WayType.ORDER){
+        if(type==WayType.ORDER && !orders.isEmpty()){
             return Math.sqrt(Math.pow(orders.peek().getCustomer().getPosition().getX()-x,2) + Math.pow(orders.peek().getCustomer().getPosition().getY()-y,2));
         } else {
             return Math.sqrt(Math.pow(Container.get().getRestaurantAdress().getX()-x,2) + Math.pow(Container.get().getRestaurantAdress().getY()-y,2));

@@ -11,12 +11,22 @@ public class Meal implements Serializable,MealInterface {
     private MealCategory category;
     private MealSize size;
     private List<String> ingredients;
+    private String name;
 
     public Meal(double price, MealCategory category, MealSize size, List<String> ingredients) {
         this.price = price;
         this.category = category;
         this.size = size;
         this.ingredients = ingredients;
+    }
+
+    @Override
+    public String toString() {
+        return 	"\n\tName: " + name
+                +"\n\tPrice: " + Double.toString(price)
+                +"\n\tMeal size: " + size
+                +"\n\tIngredietns: " + ingredients.toString()
+                +"\n\tCategory: " + category;
     }
 
     @Override

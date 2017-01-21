@@ -1,8 +1,13 @@
 package restaurant.transport;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import restaurant.*;
+import restaurant.Container;
 
 import java.awt.*;
+import java.util.Arrays;
 
 /**
  * Created by Aleksander Kaźmierczak on 18.01.2017.
@@ -10,16 +15,39 @@ import java.awt.*;
 public class ProviderController {
 
     @FXML
-    private Button buttonReturn;
+    private ListView<String> listViewProvider;
 
-    @FXML
-    private Button buttonDelete;
+    private String pesel;
+
+    public String getPesel() {
+        return pesel;
+    }
+
+    public void setPesel(String pesel) {
+        this.pesel = pesel;
+    }
+
+    public ListView<String> getListViewProvider() {
+        return listViewProvider;
+    }
+
+    public void setListViewProvider(ListView<String> listViewProvider) {
+        this.listViewProvider = listViewProvider;
+    }
 
     public void onReturnClicked(){
 
+        Provider provider = Container.get().getProviderList().stream()
+                .filter(provider1 -> provider1.getPESEL().equals(pesel))
+                .findFirst()
+                .get();
+        System.out.println(provider);
     }
 
     public void onDeleteClicked(){
+        Container.get().getThreadsMap().get(Integer.parseInt(pesel)).interrupt();
+
+
 
     }
 }
