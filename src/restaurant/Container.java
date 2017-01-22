@@ -2,6 +2,8 @@ package restaurant;
 
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import restaurant.clients.CorporateCustomer;
 import restaurant.clients.Customer;
 import restaurant.clients.RegularCustomer;
@@ -47,6 +49,33 @@ public class Container implements Serializable{
         return container;
     }
 
+    public void reset(){
+        if(!Container.get().getThreadsMap().isEmpty()) {
+            Container.get().getThreadsMap().forEach((i, t) -> {
+                t.interrupt();
+            });
+        }
+
+        paneChildren.clear();
+        providerList.clear();
+        customerList.clear();
+        mealsList.clear();
+        threadsMap.clear();
+        orderList.clear();
+        startValues();
+        container.createRestaurant();
+    }
+
+    public void createRestaurant(){
+        Rectangle rect = new Rectangle(Container.get().getRestaurantAdress().getX()* Container.get().getPolygonSize(),
+                Container.get().getRestaurantAdress().getY()* Container.get().getPolygonSize(),
+                Container.get().getPolygonSize(),
+                Container.get().getPolygonSize());
+        rect.setFill(Color.GREEN);
+        rect.toFront();
+        Container.getPaneChildren().add(rect);
+    }
+
     public static void set(Container c){
         container =c;
     }
@@ -61,6 +90,10 @@ public class Container implements Serializable{
         polygonMap = new Polygon[mapSize][mapSize];
         threadsMap =  new HashMap<>();
 
+        startValues();
+    }
+
+    private void startValues(){
         for (int i = 0; i < polygonMap.length; i++) {
             for (int j = 0; j < polygonMap[i].length; j++) {
                 polygonMap[i][j] = new Polygon(i,j,0);
@@ -152,6 +185,25 @@ public class Container implements Serializable{
         mealSet.addMeal(new Meal("Makaron z sosem pieczeniowym",10, MealCategory.PASTA, MealSize.MEDIUM,list));
 
         mealsList.add(mealSet3);
+    }
+
+    public void reCreate(){
+        threadsMap =  new HashMap<>();
+        customerList.forEach(customer -> {
+            customer.reCreate();
+            Thread thread = new Thread(customer);
+            thread.setDaemon(false);
+            thread.start();
+            Container.get().getThreadsMap().put(customer.getCode(),thread);
+        });
+        providerList.forEach(provider -> {
+            provider.reCreate();
+            new Thread(provider).start();
+            Thread thread =new Thread(provider);
+            thread.setDaemon(false);
+            thread.start();
+            Container.get().getThreadsMap().put(Integer.parseInt(provider.getPESEL()),thread);
+        });
     }
 
     public Order generateOrder(Customer customer){

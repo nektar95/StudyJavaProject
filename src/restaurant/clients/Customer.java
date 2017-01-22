@@ -6,13 +6,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import restaurant.Adress;
 import restaurant.Container;
 import restaurant.DrawingShape;
-import restaurant.Order;
-import restaurant.transport.ProviderController;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -38,12 +35,26 @@ public class Customer extends DrawingShape implements Serializable, Runnable {
         this.orderTime = orderTime;
         getShape().setOnMouseClicked(event -> {
             try {
+                getShape().setFill(Color.CYAN);
                 customerInfoBox();
             } catch (IOException e){
 
             }
         });
         drawMove();
+    }
+
+    public void reCreate(){
+        setColor(Color.BLUE);
+        draw();
+        drawMove();
+        getShape().setOnMouseClicked(event -> {
+            try {
+                customerInfoBox();
+            } catch (IOException e){
+
+            }
+        });
     }
 
     @Override
@@ -56,15 +67,14 @@ public class Customer extends DrawingShape implements Serializable, Runnable {
 
                 Container.get().getOrderList().add(Container.get().generateOrder(this));
 
-                Container.get().getMutex().release();
                 System.out.println("NEW ORDER");
-                Container.get().getSemaphore().release();
             } catch (InterruptedException ie){
                 Thread.currentThread().interrupt();
                 remove();
+                break;
+            } finally {
                 Container.get().getMutex().release();
                 Container.get().getSemaphore().release();
-                break;
             }
         }
         System.out.println("CUSTOMER DELETED");
@@ -78,16 +88,16 @@ public class Customer extends DrawingShape implements Serializable, Runnable {
         Stage stage = new Stage();
         stage.setScene(scene);
         stage.setTitle("Customer Info");
+        stage.setOnCloseRequest(event -> {
+            getShape().setFill(getColor());
+        });
         stage.show();
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    controller.getListViewProvider().setItems(getListInfo());
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
+        Thread thread = new Thread(() -> {
+            try {
+                controller.getListViewProvider().setItems(getListInfo());
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
 
-                }
             }
         });
         thread.setDaemon(false);

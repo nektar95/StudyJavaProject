@@ -1,14 +1,14 @@
-package restaurant.transport;
+package restaurant.meals;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.ListView;
 import restaurant.Container;
-import java.io.Serializable;
+import restaurant.transport.Provider;
 
 /**
  * Created by Aleksander Kaźmierczak on 18.01.2017.
  */
-public class ProviderController implements Serializable {
+public class MealController {
 
     @FXML
     private ListView<String> listViewProvider;

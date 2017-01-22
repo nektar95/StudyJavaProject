@@ -20,17 +20,7 @@
         <menus>
           <Menu mnemonicParsing="false" text="File">
             <items>
-              <MenuItem mnemonicParsing="false" text="Close" />
-            </items>
-          </Menu>
-          <Menu mnemonicParsing="false" text="Edit">
-            <items>
-              <MenuItem mnemonicParsing="false" text="Delete" />
-            </items>
-          </Menu>
-          <Menu mnemonicParsing="false" text="Help">
-            <items>
-              <MenuItem mnemonicParsing="false" text="About" />
+              <MenuItem fx:id="menuNewMap" mnemonicParsing="false" onAction="#onNewMapClick" text="New map" />
             </items>
           </Menu>
         </menus>
@@ -39,7 +29,10 @@
    <right>
       <VBox alignment="TOP_CENTER" spacing="20.0" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="new_customer_button" mnemonicParsing="false" onAction="#onNewCustomerClick" text="New customer" />
+            <Button fx:id="new_customer_button" mnemonicParsing="false" onAction="#onNewCustomerClick" text="New customer">
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin></Button>
             <Button fx:id="new_provider_button" mnemonicParsing="false" onAction="#onNewProviderClick" text="New provider" />
             <Button fx:id="new_meal_button" mnemonicParsing="false" onAction="#onNewMealClick" text="New meal" />
             <Button fx:id="new_order_button" mnemonicParsing="false" onAction="#onNewOrderClick" text="New order" textFill="RED" />
@@ -69,7 +62,7 @@
             <Insets />
          </BorderPane.margin>
          <padding>
-            <Insets bottom="15.0" left="5.0" right="5.0" top="15.0" />
+            <Insets bottom="15.0" left="10.0" right="10.0" top="15.0" />
          </padding>
          <effect>
             <DropShadow color="#6b6b6b" height="11.67" radius="7.6675" />

@@ -1,6 +1,7 @@
 package restaurant.meals;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,6 +19,7 @@ public class Meal implements Serializable,MealInterface {
         this.price = price;
         this.category = category;
         this.size = size;
+        this.ingredients = new ArrayList<>();
         this.ingredients.addAll(ingredients);
     }
 

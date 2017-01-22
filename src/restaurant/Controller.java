@@ -33,6 +33,10 @@ public class Controller implements Initializable, Serializable {
         Container.get().getThreadsMap().put(Integer.parseInt(provider.getPESEL()),thread);
     }
 
+    public void onNewMapClick(){
+        Container.get().reset();
+    }
+
     public void onNewMealClick(){
 
     }

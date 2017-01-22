@@ -58,4 +58,12 @@ public class DrawingShape implements Serializable {
             Container.get().getPaneChildren().remove(shape);
         });
     }
+
+    public Paint getColor() {
+        return color;
+    }
+
+    public void setColor(Paint color) {
+        this.color = color;
+    }
 }

@@ -35,8 +35,10 @@ public class Provider extends DrawingShape implements Serializable, Runnable {
     private List<VehicleType> drivingLicenses;
     private Vehicle vehicle;
     private Stack<Order> orders;
-    private ProviderController controller;
+    transient private ProviderController controller;
     private boolean goingBack;
+    transient private Stage stage;
+    private boolean isOpen;
 
 
     public Provider(String name, String surname, String PESEL) {
@@ -44,6 +46,7 @@ public class Provider extends DrawingShape implements Serializable, Runnable {
         this.name = name;
         this.surname = surname;
         this.PESEL = PESEL;
+        isOpen = false;
         workDaysMap = new HashMap<>();
         drivingLicenses = new ArrayList<>();
         drivingLicenses.add(VehicleType.CAR);
@@ -51,6 +54,20 @@ public class Provider extends DrawingShape implements Serializable, Runnable {
         goingBack = false;
         vehicle = new Vehicle(VehicleType.CAR,3,3,4,3,"dd");
 
+        getShape().setOnMouseClicked(event -> {
+            try {
+                getShape().setFill(Color.ORANGE);
+                providerInfoBox();
+            } catch (IOException e){
+
+            }
+        });
+    }
+
+    public void reCreate(){
+        setColor(Color.RED);
+        draw();
+        drawMove();
         getShape().setOnMouseClicked(event -> {
             try {
                 providerInfoBox();
@@ -106,11 +123,18 @@ public class Provider extends DrawingShape implements Serializable, Runnable {
             } catch (InterruptedException ie){
                 Thread.currentThread().interrupt();
                 orders.clear();
+
                 remove();
                 Container.get().getMutex().release();
                 break;
             }
         }
+        Platform.runLater(() -> {
+            Platform.setImplicitExit(false);
+            if(stage!=null) {
+                stage.close();
+            }
+        });
         System.out.println("DELETED");
     }
 
@@ -130,6 +154,16 @@ public class Provider extends DrawingShape implements Serializable, Runnable {
         goingBack = false;
     }
 
+    @Override
+    public void drawMove() {
+        super.drawMove();
+        if(isOpen) {
+            Platform.runLater(() -> {
+                controller.getListViewProvider().setItems(getListInfo());
+            });
+        }
+    }
+
     public void addOrder(Order order){
         orders.add(order);
     }
@@ -139,23 +173,25 @@ public class Provider extends DrawingShape implements Serializable, Runnable {
         Parent root = loader.load();
         controller = loader.getController();
         Scene scene = new Scene(root);
-        Stage stage = new Stage();
+        stage = new Stage();
         stage.setScene(scene);
         stage.setTitle("Provider Info");
+        stage.setOnCloseRequest(event -> {
+            getShape().setFill(getColor());
+            isOpen = false;
+        });
         stage.show();
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    controller.getListViewProvider().setItems(getListInfo());
-                    controller.setPesel(PESEL);
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
+        isOpen = true;
+        Thread thread = new Thread(() -> {
+            try {
+                controller.getListViewProvider().setItems(getListInfo());
+                controller.setPesel(PESEL);
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
 
-                }
             }
         });
-        thread.setDaemon(true);
+        thread.setDaemon(false);
         thread.start();
     }
 
