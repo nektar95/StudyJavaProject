@@ -36,6 +36,8 @@ public class Provider extends DrawingShape implements Serializable, Runnable {
     private Vehicle vehicle;
     private Stack<Order> orders;
     private ProviderController controller;
+    private boolean goingBack;
+
 
     public Provider(String name, String surname, String PESEL) {
         super(Container.get().getRestaurantAdress(),Color.RED);
@@ -46,7 +48,9 @@ public class Provider extends DrawingShape implements Serializable, Runnable {
         drivingLicenses = new ArrayList<>();
         drivingLicenses.add(VehicleType.CAR);
         orders = new Stack<>();
+        goingBack = false;
         vehicle = new Vehicle(VehicleType.CAR,3,3,4,3,"dd");
+
         getShape().setOnMouseClicked(event -> {
             try {
                 providerInfoBox();
@@ -83,26 +87,35 @@ public class Provider extends DrawingShape implements Serializable, Runnable {
                 }
                 Container.get().getMutex().release();
 
+
                 if (orders != null) {
                     while (orders.size()>0) {
                         goToCustomer();
-                        orders.pop();
+                        if(!goingBack) {
+                            orders.pop();
+                        }else {
+                            break;
+                        }
                     }
+                    goingBack = true;
+                }
+                if(goingBack){
                     goBack();
+                    goingBack = false;
                 }
             } catch (InterruptedException ie){
                 Thread.currentThread().interrupt();
                 orders.clear();
                 remove();
+                Container.get().getMutex().release();
                 break;
-
             }
         }
         System.out.println("DELETED");
     }
 
     private void goToCustomer() throws InterruptedException{
-        while (getPosition() != orders.peek().getCustomer().getPosition() &&!Thread.currentThread().isInterrupted()) {
+        while (!orders.isEmpty()&&getPosition() != orders.peek().getCustomer().getPosition() &&!Thread.currentThread().isInterrupted() && !goingBack) {
             Thread.sleep(100);
             deliver(WayType.ORDER);
             drawMove();
@@ -114,7 +127,7 @@ public class Provider extends DrawingShape implements Serializable, Runnable {
             deliver(WayType.HOME);
             drawMove();
         }
-
+        goingBack = false;
     }
 
     public void addOrder(Order order){
@@ -240,6 +253,14 @@ public class Provider extends DrawingShape implements Serializable, Runnable {
 
     public void fillIn(){
 
+    }
+
+    public boolean isGoingBack() {
+        return goingBack;
+    }
+
+    public void setGoingBack(boolean goingBack) {
+        this.goingBack = goingBack;
     }
 
     public String getName() {

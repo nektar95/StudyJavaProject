@@ -1,31 +1,27 @@
 package restaurant;
 
 import javafx.collections.ObservableList;
-import javafx.scene.Group;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.paint.Color;
 import restaurant.clients.CorporateCustomer;
 import restaurant.clients.Customer;
 import restaurant.clients.RegularCustomer;
-import restaurant.meals.MealInterface;
+import restaurant.meals.*;
 import restaurant.transport.Provider;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by Aleksander Kaźmierczak on 16.01.2017.
  */
-public class Container {
+public class Container implements Serializable{
     private static Container container;
     private List<Customer> customerList;
     private List<Provider> providerList;
     private Stack<Order> orderList;
-    private List<MealInterface> mealsList;
+    private List<MealInterface> mealsList = new ArrayList<>();
     private Semaphore semaphore = new Semaphore(0);
     private Semaphore mutex = new Semaphore(1);
 
@@ -33,7 +29,7 @@ public class Container {
     private int polygonSize = 20;
     private int mapSize = 30;
     private Adress restaurantAdress;
-    private Map<Integer,Thread> threadsMap;
+    transient private Map<Integer,Thread> threadsMap;
 
     private static ObservableList<Node> paneChildren;
     private static String names[] = {"Antoni", "Jarosław","Mariusz","Donald","Beata","Janusz","Grażyna","Wiesław","Eustachy",
@@ -43,11 +39,16 @@ public class Container {
     private static String meals[] = {"Pizza","Pasta","Tort","Ciasto","Sernik z rodzynkami","Kiełbasa","Chleb z bułką","Bułka z chlebem"};
     private static String ingriedents[] = {"Sól","Pieprz","Oregano","Czosnek","Musztarda","Papryka","Ser","Dżem","Miód","Bułka tarta"};
 
-        public static Container get(){
+
+    public static Container get(){
         if(container==null){
             container = new Container();
         }
         return container;
+    }
+
+    public static void set(Container c){
+        container =c;
     }
 
     public Container(){
@@ -68,6 +69,104 @@ public class Container {
 
         restaurantAdress = generateAdress(0);
         polygonMap[restaurantAdress.getX()][restaurantAdress.getY()].setType(3);
+
+        List<String> list = new ArrayList<>();
+        list.add("Sól");
+
+        mealsList.add(new Meal("Pyzy",10, MealCategory.MAIN, MealSize.BIG,list));
+        mealsList.add(new Meal("Pyzy",7, MealCategory.MAIN, MealSize.SMALL,list));
+
+        list.clear();
+        list.add("Pieprz");
+        list.add("Musztarda");
+        list.add("Miód");
+
+        mealsList.add(new Meal("Zupka chińska",11, MealCategory.MAIN, MealSize.BIG,list));
+        mealsList.add(new Meal("Zupka chińska",8, MealCategory.MAIN, MealSize.SMALL,list));
+
+        list.clear();
+
+        mealsList.add(new Meal("Budyń",8, MealCategory.DESSERT, MealSize.MEDIUM,list));
+        mealsList.add(new Meal("Budyń",10, MealCategory.DESSERT, MealSize.BIG,list));
+
+        list.clear();
+        list.add("Pieprz");
+        list.add("Papryka");
+        list.add("Czosnek");
+        list.add("Ser");
+        list.add("Oregano");
+        list.add("Musztarda");
+        list.add("Miód");
+        list.add("Mięso");
+
+        mealsList.add(new Meal("Turbo pizza americana",25, MealCategory.PIZZA, MealSize.BIG,list));
+        mealsList.add(new Meal("Turbo pizza americana",22, MealCategory.PIZZA, MealSize.MEDIUM,list));
+        mealsList.add(new Meal("Turbo pizza americana",19, MealCategory.PIZZA, MealSize.SMALL,list));
+
+        list.clear();
+        list.add("Pieprz");
+        list.add("Brokuł");
+
+        mealsList.add(new Meal("Penne z brokułami",15, MealCategory.PASTA, MealSize.BIG,list));
+
+        list.clear();
+        list.add("Mango");
+        list.add("Kiwi");
+        list.add("Granat");
+
+        mealsList.add(new Meal("Lody",13, MealCategory.DESSERT, MealSize.BIG,list));
+        mealsList.add(new Meal("Lody",11, MealCategory.DESSERT, MealSize.MEDIUM,list));
+        mealsList.add(new Meal("Lody",8, MealCategory.DESSERT, MealSize.SMALL,list));
+
+        MealSet mealSet = new MealSet("Egzotyczny deser",10);
+        mealSet.addMeal(new Meal("Lody",13, MealCategory.DESSERT, MealSize.BIG,list));
+        list.clear();
+        list.add("Jablko");
+
+        mealSet.addMeal(new Meal("Koktajl",10, MealCategory.DESSERT, MealSize.BIG,list));
+
+        mealsList.add(mealSet);
+        list.clear();
+        list.add("Bekon");
+        list.add("Kurczak");
+        list.add("Mielone");
+
+        MealSet mealSet2 = new MealSet("Tłusta wyżerka",10);
+        mealSet.addMeal(new Meal("Pizza rzeźnicka",25, MealCategory.PIZZA, MealSize.BIG,list));
+        list.clear();
+        list.add("Bekon");
+        list.add("jajko");
+        list.add("Sól");
+        mealSet.addMeal(new Meal("Bekon z jajkiem",18, MealCategory.PIZZA, MealSize.BIG,list));
+
+        mealsList.add(mealSet2);
+
+        MealSet mealSet3 = new MealSet("Syty obiad",10);
+        list.clear();
+        list.add("Mięso");
+        list.add("Ser");
+        list.add("Oliwa");
+        mealSet.addMeal(new Meal("Mieso z serem",28, MealCategory.MAIN, MealSize.BIG,list));
+        list.clear();
+        list.add("Sos z tytki");
+        mealSet.addMeal(new Meal("Makaron z sosem pieczeniowym",10, MealCategory.PASTA, MealSize.MEDIUM,list));
+
+        mealsList.add(mealSet3);
+    }
+
+    public Order generateOrder(Customer customer){
+        Order order = new Order(customer);
+        int size = ThreadLocalRandom.current().nextInt(0,10);
+
+        for (int i=0;i<size;i++){
+            if(ThreadLocalRandom.current().nextInt(0,1)==1){
+
+            } else {
+                order.addToOrder(mealsList.get(ThreadLocalRandom.current().nextInt(0,mealsList.size())));
+            }
+        }
+
+        return order;
     }
 
     public Customer generateCustomer(){
@@ -99,7 +198,10 @@ public class Container {
 
     public Provider generateProvider(){
         System.out.println("GENERATING PROVIDER");
-        Provider provider = new Provider("dddddwadwa","Bolec","324655");
+        Random random = new Random();
+        int surname = random.nextInt(surnames.length);
+        int name = random.nextInt(names.length);
+        Provider provider = new Provider(names[name],surnames[surname],Integer.toString(random.nextInt(10000)));
         providerList.add(provider);
         return provider;
     }

@@ -41,13 +41,11 @@ public class ProviderController {
                 .filter(provider1 -> provider1.getPESEL().equals(pesel))
                 .findFirst()
                 .get();
-        System.out.println(provider);
+        provider.setGoingBack(true);
     }
 
     public void onDeleteClicked(){
         Container.get().getThreadsMap().get(Integer.parseInt(pesel)).interrupt();
-
-
-
+        Container.get().getThreadsMap().remove(pesel);
     }
 }

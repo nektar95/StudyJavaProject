@@ -1,6 +1,7 @@
 package restaurant;
 
 import restaurant.clients.Customer;
+import restaurant.clients.RegularCustomer;
 import restaurant.meals.MealInterface;
 
 import java.io.Serializable;
@@ -47,11 +48,16 @@ public class Order implements Serializable{
     public void addToOrder(MealInterface item) {
         mealsList.add(item);
         quantify += item.countAmount();
-        //CHECK DISTANCE
         price += item.countPrice();
+        if(customer instanceof RegularCustomer){
+            ((RegularCustomer)customer).addPoints(item.countAmount());
+        }
     }
 
     public double getPrice() {
+        if(price<0){
+            return 0;
+        }
         return price;
     }
 

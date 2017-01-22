@@ -1,9 +1,11 @@
 package restaurant;
 
+import java.io.Serializable;
+
 /**
  * Created by Aleksander Kaźmierczak  on 16.01.2017.
  */
-public class Polygon {
+public class Polygon implements Serializable{
     private int type;
     private int x;
     private int y;

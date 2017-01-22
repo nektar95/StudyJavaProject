@@ -13,11 +13,12 @@ public class Meal implements Serializable,MealInterface {
     private List<String> ingredients;
     private String name;
 
-    public Meal(double price, MealCategory category, MealSize size, List<String> ingredients) {
+    public Meal(String name,double price, MealCategory category, MealSize size, List<String> ingredients) {
+        this.name = name;
         this.price = price;
         this.category = category;
         this.size = size;
-        this.ingredients = ingredients;
+        this.ingredients.addAll(ingredients);
     }
 
     @Override

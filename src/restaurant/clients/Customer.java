@@ -1,14 +1,23 @@
 package restaurant.clients;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.Stage;
 import restaurant.Adress;
 import restaurant.Container;
 import restaurant.DrawingShape;
 import restaurant.Order;
+import restaurant.transport.ProviderController;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by Aleksander Kaźmierczak on 27.11.2016.
@@ -19,6 +28,7 @@ public class Customer extends DrawingShape implements Serializable, Runnable {
     private String phoneNumber;
     private Date orderTime;
     private String eMail;
+    transient private CustomerController controller;
 
     public Customer(String name, int code, String phoneNumber, Adress deliveryAdress, Date orderTime) {
         super(deliveryAdress, Color.BLUE);
@@ -26,33 +36,73 @@ public class Customer extends DrawingShape implements Serializable, Runnable {
         this.code = code;
         this.phoneNumber = phoneNumber;
         this.orderTime = orderTime;
+        getShape().setOnMouseClicked(event -> {
+            try {
+                customerInfoBox();
+            } catch (IOException e){
+
+            }
+        });
         drawMove();
     }
 
     @Override
     public void run() {
-        while (true){
+        while (!Thread.currentThread().isInterrupted()){
             System.out.println("CUSTOMER");
             try {
-                Thread.sleep(5000); // LOSOWY OKRES MA BYC
+                Thread.sleep(ThreadLocalRandom.current().nextInt(2000,20000));
                 Container.get().getMutex().acquire(); //podnosi semafor binanry
-                Order order = new Order(this);
 
-                Container.get().getOrderList().add(order);
+                Container.get().getOrderList().add(Container.get().generateOrder(this));
 
                 Container.get().getMutex().release();
-
                 System.out.println("NEW ORDER");
-                //method generating order in container, static, synchronized?
                 Container.get().getSemaphore().release();
-
             } catch (InterruptedException ie){
-                //HANDLE THIS BY DRAWING BACK TRACE
+                Thread.currentThread().interrupt();
+                remove();
+                Container.get().getMutex().release();
+                Container.get().getSemaphore().release();
+                break;
             }
         }
+        System.out.println("CUSTOMER DELETED");
     }
 
-    public void addPoints(int p){}
+    public void customerInfoBox() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("customer.fxml"));
+        Parent root = loader.load();
+        controller = loader.getController();
+        Scene scene = new Scene(root);
+        Stage stage = new Stage();
+        stage.setScene(scene);
+        stage.setTitle("Customer Info");
+        stage.show();
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    controller.getListViewProvider().setItems(getListInfo());
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+
+                }
+            }
+        });
+        thread.setDaemon(false);
+        thread.start();
+    }
+
+    public ObservableList<String> getListInfo(){
+        ObservableList<String> list = FXCollections.observableArrayList();
+        list.add("Name:" + getName());
+        list.add("Surname:" + getPhoneNumber());
+        list.add("Order time:" + getOrderTime());
+        list.add("Mail:" + geteMail());
+
+        return list;
+    }
 
     public boolean checkDiscount(){
         return false;

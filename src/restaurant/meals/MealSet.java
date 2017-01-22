@@ -18,7 +18,8 @@ public class MealSet implements Serializable,MealInterface {
                 +mealList.toString();
     }
 
-    public MealSet(double discount) {
+    public MealSet(String name,double discount) {
+        this.name = name;
         this.discount = discount;
         mealList = new ArrayList<>();
     }

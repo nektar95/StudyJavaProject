@@ -18,15 +18,17 @@ public class RegularCustomer extends Customer implements Serializable {
         this.discount = discount;
     }
 
-    @Override
+
     public void addPoints(int p) {
         points +=p;
     }
 
     @Override
     public boolean checkDiscount() {
-        //check if points are below some value
-        return true;
+        if (points>10) {
+            return true;
+        }
+        return false;
     }
 
     public int getPoints() {

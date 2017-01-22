@@ -1,19 +1,20 @@
 package restaurant;
 
 import javafx.application.Platform;
-import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import restaurant.Adress;
 import restaurant.Container;
 
+import java.io.Serializable;
+
 /**
  * Created by Aleksander Kaźmierczak on 17.01.2017.
  */
-public class DrawingShape {
-    private Rectangle shape;
+public class DrawingShape implements Serializable {
+    transient private Rectangle shape;
     private Adress position;
-    private Paint color;
+    transient private Paint color;
 
     public DrawingShape(Adress position, Paint paint) {
         this.position = position;
