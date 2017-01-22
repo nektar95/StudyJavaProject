@@ -39,7 +39,7 @@ public class Main extends Application {
         Container.get().createRestaurant();
         Container.get().reCreate();
 
-        primaryStage.getIcons().add(new Image(Main.class.getResourceAsStream("resources\\ic_store_black_36dp_2x.png")));
+        primaryStage.getIcons().add(new Image("http://image.flaticon.com/icons/png/128/52/52102.png"));
         primaryStage.setOnCloseRequest((WindowEvent event) -> {
             String nazwaPliku = "container.ser";
             try {
