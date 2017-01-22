@@ -1,5 +1,7 @@
 package restaurant.clients;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import restaurant.Adress;
 
 import java.io.Serializable;
@@ -19,6 +21,20 @@ public class CorporateCustomer extends Customer implements Serializable {
         this.bankAccount = bankAccount;
         this.REGON = REGON;
     }
+
+    @Override
+    public ObservableList<String> getListInfo() {
+        ObservableList<String> list = FXCollections.observableArrayList();
+        list.add("Name:" + getName());
+        list.add("Phone number:" + getPhoneNumber());
+        list.add("Order time:" + getOrderTime());
+        list.add("Correspondence adress:" + getCorrespondenceAdress());
+        list.add("Bank account:" + getBankAccount());
+        list.add("REGON:" + getREGON());
+
+        return list;
+    }
+
 
     public String getCorrespondenceAdress() {
         return correspondenceAdress;

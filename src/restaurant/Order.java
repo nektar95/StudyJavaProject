@@ -32,7 +32,7 @@ public class Order implements Serializable{
 
     @Override
     public String toString() {
-        return 	"\n\tPrice: " + Double.toString(price)
+        return 	"\n\tPrice: " + Double.toString(getPrice())
                 +"\n\tQuantify: " + Integer.toString(quantify)
                 +"\n\tMeals: " + mealsList.toString();
     }
@@ -45,6 +45,10 @@ public class Order implements Serializable{
         this.quantify = quantify;
     }
 
+    /**
+     * adding meal to order
+     * @param item
+     */
     public void addToOrder(MealInterface item) {
         mealsList.add(item);
         quantify += item.countAmount();
@@ -54,6 +58,10 @@ public class Order implements Serializable{
         }
     }
 
+    /**
+     * return properly price
+     * @return
+     */
     public double getPrice() {
         if(price<0){
             return 0;

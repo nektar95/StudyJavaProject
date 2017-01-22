@@ -49,6 +49,10 @@ public class Container implements Serializable{
         return container;
     }
 
+    /**
+     * creating new map
+     */
+
     public void reset(){
         if(!Container.get().getThreadsMap().isEmpty()) {
             Container.get().getThreadsMap().forEach((i, t) -> {
@@ -93,6 +97,9 @@ public class Container implements Serializable{
         startValues();
     }
 
+    /**
+     * basic meals and creating map
+     */
     private void startValues(){
         for (int i = 0; i < polygonMap.length; i++) {
             for (int j = 0; j < polygonMap[i].length; j++) {
@@ -187,6 +194,9 @@ public class Container implements Serializable{
         mealsList.add(mealSet3);
     }
 
+    /**
+     * called when loading previous map
+     */
     public void reCreate(){
         threadsMap =  new HashMap<>();
         customerList.forEach(customer -> {
@@ -221,6 +231,18 @@ public class Container implements Serializable{
         return order;
     }
 
+    public List<String> generateIngriedents(){
+        List<String> list = new ArrayList<>();
+        int size = ThreadLocalRandom.current().nextInt(0,10);
+
+        for (int i=0;i<size;i++){
+            int a = ThreadLocalRandom.current().nextInt(0,ingriedents.length);
+            list.add(ingriedents[a]);
+        }
+
+        return list;
+    }
+
     public Customer generateCustomer(){
         System.out.println("GENERATING CUSTOMER");
         Adress adress = generateAdress(0);
@@ -235,7 +257,10 @@ public class Container implements Serializable{
                 break;
             }
             case 1: {
-                customer = new CorporateCustomer(names[name],customerList.size()+1,Integer.toString(random.nextInt(20000)),adress,new Date(),"","","");
+                customer = new CorporateCustomer(names[name],customerList.size()+1,Integer.toString(random.nextInt(20000)),adress
+                        ,new Date(),"Korpo adres 1/4",
+                        Long.toString(ThreadLocalRandom.current().nextLong(100000000,999999999)),
+                        Long.toString(ThreadLocalRandom.current().nextLong(100000,999999)));
                 break;
             }
             case 2:{

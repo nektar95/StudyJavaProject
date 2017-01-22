@@ -29,13 +29,13 @@
    <right>
       <VBox alignment="TOP_CENTER" spacing="20.0" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="new_customer_button" mnemonicParsing="false" onAction="#onNewCustomerClick" text="New customer">
+            <Button fx:id="new_customer_button" mnemonicParsing="false" onAction="#onNewCustomerClick" prefWidth="130.0" text="New customer">
                <VBox.margin>
                   <Insets />
                </VBox.margin></Button>
-            <Button fx:id="new_provider_button" mnemonicParsing="false" onAction="#onNewProviderClick" text="New provider" />
-            <Button fx:id="new_meal_button" mnemonicParsing="false" onAction="#onNewMealClick" text="New meal" />
-            <Button fx:id="new_order_button" mnemonicParsing="false" onAction="#onNewOrderClick" text="New order" textFill="RED" />
+            <Button fx:id="new_provider_button" mnemonicParsing="false" onAction="#onNewProviderClick" prefWidth="130.0" text="New provider" />
+            <Button fx:id="new_meal_button" mnemonicParsing="false" onAction="#onNewMealClick" prefWidth="130.0" text="New meal" />
+            <Button fx:id="new_order_button" mnemonicParsing="false" onAction="#onNewOrderClick" prefWidth="130.0" text="New order" textFill="RED" />
             <HBox fillHeight="false" prefWidth="130.0">
                <children>
                   <Rectangle arcHeight="1.0" arcWidth="2.0" fill="#008604" height="30.0" stroke="BLACK" strokeType="INSIDE" width="30.0" />

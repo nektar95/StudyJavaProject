@@ -7,13 +7,14 @@ import java.io.Serializable;
  */
 public class Vehicle implements Serializable {
     private VehicleType type;
-    private double speed;
+    private long speed;
     private double fuel;
     private double fuelCapacity;
     private int capacity;
+    private int usedCapacity;
     private String registrationNumber;
 
-    public Vehicle(VehicleType type, double speed, double fuel, double fuelCapacity, int capacity, String registrationNumber) {
+    public Vehicle(VehicleType type, long speed, double fuel, double fuelCapacity, int capacity, String registrationNumber) {
         this.type = type;
         this.speed = speed;
         this.fuel = fuel;
@@ -29,14 +30,31 @@ public class Vehicle implements Serializable {
                 +"\n\tFuel capacity: "+Double.toString(fuelCapacity)
                 +"\n\tFuel: "+Double.toString(fuel)
                 +"\n\tSpeed: "+Double.toString(speed)
-                +"\n\tCapacity: "+Double.toString(capacity);
+                +"\n\tCapacity: "+Double.toString(capacity)
+                +"\n\tUsed capacity: "+Double.toString(usedCapacity);
     }
 
-    public double getSpeed() {
+    public VehicleType getType() {
+        return type;
+    }
+
+    public int getUsedCapacity() {
+        return usedCapacity;
+    }
+
+    public void setUsedCapacity(int usedCapacity) {
+        this.usedCapacity = usedCapacity;
+    }
+
+    public void fuelUsed(){
+        fuel -= 0.1;
+    }
+
+    public long getSpeed() {
         return speed;
     }
 
-    public void setSpeed(double speed) {
+    public void setSpeed(long speed) {
         this.speed = speed;
     }
 

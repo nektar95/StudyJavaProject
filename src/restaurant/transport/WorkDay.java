@@ -2,6 +2,7 @@ package restaurant.transport;
 
 import java.io.Serializable;
 import java.time.DayOfWeek;
+import java.time.LocalTime;
 import java.util.Date;
 
 /**
@@ -9,12 +10,17 @@ import java.util.Date;
  */
 public class WorkDay implements Serializable {
     private DayOfWeek dayOfWeek;
-    private Date startHour;
-    private Date endHour;
+    private LocalTime startHour;
+    private LocalTime endHour;
 
-    public WorkDay(DayOfWeek dayOfWeek, Date startHour, Date endHour) {
+    public WorkDay(DayOfWeek dayOfWeek, LocalTime startHour, LocalTime endHour) {
         this.dayOfWeek = dayOfWeek;
         this.startHour = startHour;
         this.endHour = endHour;
+    }
+
+    @Override
+    public String toString() {
+        return dayOfWeek + ": "+startHour.getHour() + " - " + endHour.getHour();
     }
 }

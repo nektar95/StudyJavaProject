@@ -1,9 +1,14 @@
 package restaurant.meals;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
 import restaurant.Container;
 import restaurant.transport.Provider;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Aleksander Kaźmierczak on 18.01.2017.
@@ -11,37 +16,50 @@ import restaurant.transport.Provider;
 public class MealController {
 
     @FXML
-    private ListView<String> listViewProvider;
+    private ComboBox sizeCombo;
 
-    private String pesel;
+    @FXML
+    private ComboBox categoryCombo;
 
-    public String getPesel() {
-        return pesel;
-    }
+    @FXML
+    private TextField nameText;
 
-    public void setPesel(String pesel) {
-        this.pesel = pesel;
-    }
+    @FXML
+    private TextField priceText;
 
-    public ListView<String> getListViewProvider() {
-        return listViewProvider;
-    }
+    public void onAddMealClicked(){
+        MealSize size =MealSize.MEDIUM;
+        MealCategory category=MealCategory.PIZZA;
+        if(categoryCombo.getValue().equals("Pizza")){
+            category = MealCategory.PIZZA;
+        }
+        if(categoryCombo.getValue().equals("Pasta")){
+            category =MealCategory.PASTA ;
+        }
+        if(categoryCombo.getValue().equals("Main")){
+            category =MealCategory.MAIN;
+        }
+        if(categoryCombo.getValue().equals("Dessert")){
+            category = MealCategory.DESSERT;
+        }
 
-    public void setListViewProvider(ListView<String> listViewProvider) {
-        this.listViewProvider = listViewProvider;
-    }
+        if(sizeCombo.getValue().equals("Small")){
+            size =MealSize.SMALL ;
+        }
+        if(sizeCombo.getValue().equals("Medium")){
+            size =MealSize.MEDIUM;
+        }
+        if(sizeCombo.getValue().equals("Big")){
+            size =MealSize.BIG;
+        }
+        if(sizeCombo.getValue().equals("Family")){
+            size =MealSize.FAMILY;
+        }
+        double price = Double.parseDouble(priceText.getText());
 
-    public void onReturnClicked(){
-
-        Provider provider = Container.get().getProviderList().stream()
-                .filter(provider1 -> provider1.getPESEL().equals(pesel))
-                .findFirst()
-                .get();
-        provider.setGoingBack(true);
-    }
-
-    public void onDeleteClicked(){
-        Container.get().getThreadsMap().get(Integer.parseInt(pesel)).interrupt();
-        Container.get().getThreadsMap().remove(pesel);
+        List<String> list = Container.get().generateIngriedents();
+        Meal meal = new Meal(nameText.getText(),price,category,size,list);
+        Container.get().getMealsList().add(meal);
+        System.out.println(meal);
     }
 }

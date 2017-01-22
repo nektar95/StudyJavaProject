@@ -44,6 +44,9 @@ public class Customer extends DrawingShape implements Serializable, Runnable {
         drawMove();
     }
 
+    /**
+     * called when loading previus map
+     */
     public void reCreate(){
         setColor(Color.BLUE);
         draw();
@@ -57,6 +60,9 @@ public class Customer extends DrawingShape implements Serializable, Runnable {
         });
     }
 
+    /**
+     * main functionalisty, creating orders
+     */
     @Override
     public void run() {
         while (!Thread.currentThread().isInterrupted()){
@@ -80,6 +86,10 @@ public class Customer extends DrawingShape implements Serializable, Runnable {
         System.out.println("CUSTOMER DELETED");
     }
 
+    /**
+     * info dialog box about customer
+     * @throws IOException
+     */
     public void customerInfoBox() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("customer.fxml"));
         Parent root = loader.load();
@@ -104,12 +114,15 @@ public class Customer extends DrawingShape implements Serializable, Runnable {
         thread.start();
     }
 
+    /**
+     * creating info for dialog box
+     * @return
+     */
     public ObservableList<String> getListInfo(){
         ObservableList<String> list = FXCollections.observableArrayList();
         list.add("Name:" + getName());
-        list.add("Surname:" + getPhoneNumber());
+        list.add("Phone number:" + getPhoneNumber());
         list.add("Order time:" + getOrderTime());
-        list.add("Mail:" + geteMail());
 
         return list;
     }

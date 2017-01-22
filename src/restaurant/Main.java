@@ -27,7 +27,7 @@ public class Main extends Application {
             ObjectInputStream in = new ObjectInputStream(
                     new BufferedInputStream(
                             new FileInputStream("container.ser")));
-            String nagłówek = (String) in.readObject();
+            String header = (String) in.readObject();
             Container.set((Container) in.readObject());
             in.close();
         }catch (IOException io){

@@ -41,7 +41,16 @@ public class ProviderController implements Serializable {
     }
 
     public void onDeleteClicked(){
+        Provider provider = Container.get().getProviderList().stream()
+                .filter(provider1 -> provider1.getPESEL().equals(pesel))
+                .findFirst()
+                .get();
+
+        synchronized (Container.get().getPolygonMap()) {
+            Container.get().getPolygonMap()[provider.getPosition().getX()][provider.getPosition().getY()].setType(0);
+        }
         Container.get().getThreadsMap().get(Integer.parseInt(pesel)).interrupt();
         Container.get().getThreadsMap().remove(pesel);
+        Container.get().getProviderList().remove(provider);
     }
 }

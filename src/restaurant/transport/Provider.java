@@ -18,8 +18,10 @@ import restaurant.Order;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.time.DayOfWeek;
+import java.time.LocalTime;
 import java.util.*;
-import java.math.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by Aleksander Kaźmierczak on 27.11.2016.
@@ -40,7 +42,12 @@ public class Provider extends DrawingShape implements Serializable, Runnable {
     transient private Stage stage;
     private boolean isOpen;
 
-
+    /**
+     * provider constructor
+     * @param name
+     * @param surname
+     * @param PESEL
+     */
     public Provider(String name, String surname, String PESEL) {
         super(Container.get().getRestaurantAdress(),Color.RED);
         this.name = name;
@@ -52,7 +59,26 @@ public class Provider extends DrawingShape implements Serializable, Runnable {
         drivingLicenses.add(VehicleType.CAR);
         orders = new Stack<>();
         goingBack = false;
-        vehicle = new Vehicle(VehicleType.CAR,3,3,4,3,"dd");
+        int fuel = ThreadLocalRandom.current().nextInt(100,200);
+        int type = ThreadLocalRandom.current().nextInt(0,100);
+
+        vehicle = new Vehicle((type <70) ? VehicleType.CAR : VehicleType.SCOOTER
+                , ThreadLocalRandom.current().nextLong(90,200)
+                ,fuel
+                ,fuel
+                ,ThreadLocalRandom.current().nextInt(20,40)
+                ,"PZ"+ThreadLocalRandom.current().nextInt(10000,20000));
+
+        type = ThreadLocalRandom.current().nextInt(0,100);
+        if(type>50){
+            drivingLicenses.add(VehicleType.SCOOTER);
+        }
+
+        workDaysMap.put(1,new WorkDay(DayOfWeek.FRIDAY,LocalTime.of(ThreadLocalRandom.current().nextInt(6,14),0),LocalTime.of(ThreadLocalRandom.current().nextInt(14,22),0)));
+        workDaysMap.put(2,new WorkDay(DayOfWeek.THURSDAY,LocalTime.of(ThreadLocalRandom.current().nextInt(6,14),0),LocalTime.of(ThreadLocalRandom.current().nextInt(14,22),0)));
+        workDaysMap.put(3,new WorkDay(DayOfWeek.WEDNESDAY,LocalTime.of(ThreadLocalRandom.current().nextInt(6,14),0),LocalTime.of(ThreadLocalRandom.current().nextInt(14,22),0)));
+        workDaysMap.put(4,new WorkDay(DayOfWeek.TUESDAY,LocalTime.of(ThreadLocalRandom.current().nextInt(6,14),0),LocalTime.of(ThreadLocalRandom.current().nextInt(14,22),0)));
+        workDaysMap.put(5,new WorkDay(DayOfWeek.MONDAY,LocalTime.of(ThreadLocalRandom.current().nextInt(6,14),0),LocalTime.of(ThreadLocalRandom.current().nextInt(14,22),0)));
 
         getShape().setOnMouseClicked(event -> {
             try {
@@ -63,6 +89,10 @@ public class Provider extends DrawingShape implements Serializable, Runnable {
             }
         });
     }
+
+    /**
+     * called when loading previous map
+     */
 
     public void reCreate(){
         setColor(Color.RED);
@@ -89,6 +119,17 @@ public class Provider extends DrawingShape implements Serializable, Runnable {
 
     }
 
+    public boolean checkLicense(){
+        if(drivingLicenses.contains(vehicle.getType())){
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * main functionality of class
+     */
+
     @Override
     public void run() {
         while (!Thread.currentThread().isInterrupted()){
@@ -98,9 +139,14 @@ public class Provider extends DrawingShape implements Serializable, Runnable {
 
                 System.out.println("PROVIDER");
 
-                if (!Container.get().getOrderList().isEmpty() && getPosition() == Container.get().getRestaurantAdress()) {
-                    orders.addAll(Container.get().getOrderList());
-                    Container.get().getOrderList().clear();
+                if (!Container.get().getOrderList().isEmpty() && getPosition() == Container.get().getRestaurantAdress() && checkLicense()) {
+                    Container.get().getOrderList().forEach(order -> {
+                        if(vehicle.getUsedCapacity() + order.getQuantify() < vehicle.getCapacity()){
+                            vehicle.setUsedCapacity(order.getQuantify());
+                            orders.add(order);
+                        }
+                    });
+                    Container.get().getOrderList().removeAll(orders);
                 }
                 Container.get().getMutex().release();
 
@@ -114,6 +160,7 @@ public class Provider extends DrawingShape implements Serializable, Runnable {
                             break;
                         }
                     }
+                    vehicle.setUsedCapacity(0);
                     goingBack = true;
                 }
                 if(goingBack){
@@ -138,35 +185,58 @@ public class Provider extends DrawingShape implements Serializable, Runnable {
         System.out.println("DELETED");
     }
 
+    /**
+     * function which simulate going to next customer
+     * @throws InterruptedException
+     */
     private void goToCustomer() throws InterruptedException{
         while (!orders.isEmpty()&&getPosition() != orders.peek().getCustomer().getPosition() &&!Thread.currentThread().isInterrupted() && !goingBack) {
-            Thread.sleep(100);
+            Thread.sleep(vehicle.getSpeed());
             deliver(WayType.ORDER);
             drawMove();
         }
     }
+
+    /**
+     * function which simulate going back to restaurant
+     * @throws InterruptedException
+     */
     private void goBack() throws InterruptedException{
         while (getPosition() != Container.get().getRestaurantAdress()&&!Thread.currentThread().isInterrupted()) {
-            Thread.sleep(100);
+            Thread.sleep(vehicle.getSpeed());
             deliver(WayType.HOME);
             drawMove();
         }
+        fillIn();
         goingBack = false;
     }
 
+    /**
+     * drawing move and checking fuel
+     */
     @Override
     public void drawMove() {
-        super.drawMove();
-        if(isOpen) {
-            Platform.runLater(() -> {
-                controller.getListViewProvider().setItems(getListInfo());
-            });
+        if(vehicle.getFuel()<0){
+            System.out.println(name + surname + " Out of fuel");
+        } else {
+            super.drawMove();
+            vehicle.fuelUsed();
+            if (isOpen) {
+                Platform.runLater(() -> {
+                    controller.getListViewProvider().setItems(getListInfo());
+                });
+            }
         }
     }
 
     public void addOrder(Order order){
         orders.add(order);
     }
+
+    /**
+     * opening dialog with info
+     * @throws IOException
+     */
 
     public void providerInfoBox() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("provider.fxml"));
@@ -195,6 +265,10 @@ public class Provider extends DrawingShape implements Serializable, Runnable {
         thread.start();
     }
 
+    /**
+     * genereting info for dialog box
+     * @return
+     */
     public ObservableList<String> getListInfo(){
         ObservableList<String> list = FXCollections.observableArrayList();
         list.add("Name:" + getName());
@@ -214,6 +288,10 @@ public class Provider extends DrawingShape implements Serializable, Runnable {
         return list;
     }
 
+    /**
+     * choose next position to move
+     * @param type
+     */
     public void deliver(WayType type){
         synchronized (Container.get().getPolygonMap()){
             double shortest = Double.MAX_VALUE;
@@ -271,6 +349,12 @@ public class Provider extends DrawingShape implements Serializable, Runnable {
         }
     }
 
+    /**
+     * checking boundaries of map
+     * @param x
+     * @param y
+     * @return
+     */
     private boolean checkBoundaries(int x, int y){
         Container.get().getMapSize();
         if(x<Container.get().getMapSize() && x>=0 && y<Container.get().getMapSize() && y>=0){
@@ -279,6 +363,13 @@ public class Provider extends DrawingShape implements Serializable, Runnable {
         return false;
     }
 
+    /**
+     * caounting distance to target
+     * @param type
+     * @param x
+     * @param y
+     * @return
+     */
     private double countDistnace(WayType type,int x, int y){
         if(type==WayType.ORDER && !orders.isEmpty()){
             return Math.sqrt(Math.pow(orders.peek().getCustomer().getPosition().getX()-x,2) + Math.pow(orders.peek().getCustomer().getPosition().getY()-y,2));
@@ -287,8 +378,11 @@ public class Provider extends DrawingShape implements Serializable, Runnable {
         }
     }
 
+    /**
+     * filling fuel to full level
+     */
     public void fillIn(){
-
+        vehicle.setFuel(vehicle.getFuelCapacity());
     }
 
     public boolean isGoingBack() {
